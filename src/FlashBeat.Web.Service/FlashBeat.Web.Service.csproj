@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FlashBeat.Common\FlashBeat.Common.csproj" />
+    <ProjectReference Include="..\FlashBeat.Core.Business\FlashBeat.Core.Business.csproj" />
+  </ItemGroup>
+
 </Project>
