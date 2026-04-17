@@ -1,0 +1,2 @@
+# FlashBeat
+A songless application
