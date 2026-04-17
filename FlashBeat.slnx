@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Back/">
+    <Project Path="src/FlashBeat.Core.Business/FlashBeat.Core.Business.csproj" />
+    <Project Path="src/FlashBeat.ExternalServices.Deezer/FlashBeat.ExternalServices.Deezer.csproj" />
+  </Folder>
+  <Folder Name="/src/Common/">
+    <Project Path="src/FlashBeat.Common/FlashBeat.Common.csproj" />
+  </Folder>
+  <Folder Name="/src/Front/">
+    <Project Path="src/FlashBeat.Maui/FlashBeat.Maui.csproj">
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="src/FlashBeat.Web.Service/FlashBeat.Web.Service.csproj" />
+  </Folder>
+</Solution>
