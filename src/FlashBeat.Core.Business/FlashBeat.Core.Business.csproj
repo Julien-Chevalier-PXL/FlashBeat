@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FlashBeat.Common\FlashBeat.Common.csproj" />
-    <ProjectReference Include="..\FlashBeat.ExternalServices.Deezer\FlashBeat.ExternalServices.Deezer.csproj" />
+    <ProjectReference Include="..\FlashBeat.ExternalServices\FlashBeat.ExternalServices.csproj" />
   </ItemGroup>
 
 </Project>

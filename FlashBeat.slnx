@@ -8,7 +8,7 @@
   <Folder Name="/src/" />
   <Folder Name="/src/Back/">
     <Project Path="src/FlashBeat.Core.Business/FlashBeat.Core.Business.csproj" />
-    <Project Path="src/FlashBeat.ExternalServices.Deezer/FlashBeat.ExternalServices.Deezer.csproj" />
+    <Project Path="src/FlashBeat.ExternalServices/FlashBeat.ExternalServices.csproj" />
   </Folder>
   <Folder Name="/src/Common/">
     <Project Path="src/FlashBeat.Common/FlashBeat.Common.csproj" />
