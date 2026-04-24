@@ -1,10 +1,23 @@
-﻿namespace FlashBeat.Maui
+namespace FlashBeat.Maui;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    public MainPage()
     {
-        public MainPage()
+        Loaded += this.MainPage_Loaded;
+        this.InitializeComponent();
+    }
+
+    private async void MainPage_Loaded(object? sender, EventArgs e)
+    {
+#if WINDOWS
+        var webview = this.blazorWebView.Handler?.PlatformView as Microsoft.UI.Xaml.Controls.WebView2;
+        if (webview is not null)
         {
-            InitializeComponent();
+            await webview.EnsureCoreWebView2Async();
+
+            webview.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
         }
+#endif
     }
 }
