@@ -1,5 +1,12 @@
-﻿@page "/"
+@page "/"
 
-<h1>Hello, world!</h1>
+<div class="flash-beat-page home">
+    <h1><FluentEmoji Value="@(new Emojis.Objects.Color.Default.MusicalNote())" /> FlashBeat</h1>
 
-Welcome to your new app.
+    <div class="quick-navigation">
+        <FluentCard Width="350px" Height="200px" onclick="@(() => this.NavigateToInfiniteMode())">
+            <h2><FluentEmoji Value="@(new Emojis.Objects.Color.Default.MusicalNotes())" /> Mode infini</h2>
+            <p>Tente de trouver la musique aléatoire le plus vite posible !</p>
+        </FluentCard>
+    </div>
+</div>

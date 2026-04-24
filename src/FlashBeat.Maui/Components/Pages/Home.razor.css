@@ -1,0 +1,11 @@
+.home .quick-navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+    .home .quick-navigation ::deep fluent-card:hover {
+        background-color: var(--neutral-fill-secondary-rest);
+        cursor: pointer
+    }

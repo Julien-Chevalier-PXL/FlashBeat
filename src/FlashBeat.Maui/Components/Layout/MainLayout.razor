@@ -1,17 +1,28 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <FluentLayout Orientation="Orientation.Vertical">
+        <FluentHeader>
+            <FluentEmoji Value="@(new Emojis.Objects.Color.Default.MusicalNote())" /> FlashBeat            
+        </FluentHeader>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="content">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+            <main>
+                @Body
+            </main>
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+        <FluentFooter>
+            Version @AppInfo.Current.VersionString
+        </FluentFooter>
+    </FluentLayout>
 </div>
+
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+<FluentMenuProvider />
