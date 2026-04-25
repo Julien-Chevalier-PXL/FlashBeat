@@ -59,4 +59,37 @@ internal sealed class DeezerClient : IMusicProvider
             }
         };
     }
+
+    /// <inheritdoc />
+    public async Task<SearchResultDto> SearchAsync(string query, int index = 0, int limit = 25, CancellationToken cancellationToken = default)
+    {
+        if(limit > 100)
+            throw new ArgumentOutOfRangeException(nameof(limit), "The limit must be less than or equal to 100.");
+
+        var response = await this.httpClient.GetAsync($"search?q={query}&limit={limit}&index={index}", cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorResponseContent = await response.Content.ReadFromJsonAsync<Error>(cancellationToken).ConfigureAwait(false);
+            throw new Exception($"Error while contacting the Deezer API: {errorResponseContent?.Message}");
+        }
+
+        var responseContent = await response.Content.ReadFromJsonAsync<SearchResult>(cancellationToken).ConfigureAwait(false);
+        if (responseContent is null)
+            return SearchResultDto.Empty;
+
+        return new()
+        {
+            Total = responseContent.Total,
+            Tracks = [.. responseContent.Tracks.Select(t => new TrackBaseDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Artist = new()
+                {
+                    Id = t.Artist.Id,
+                    Name = t.Artist.Name,
+                },
+            })],
+        };
+    }
 }
