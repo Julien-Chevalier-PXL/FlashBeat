@@ -4,13 +4,7 @@
 @using FlashBeat.Maui.Components.Shared.Enums
 
 <div class="flash-beat-page">
-    <iframe id="deezer-widget"
-            src="https://widget.deezer.com/widget/dark/track/@(this.currentTrack.Id)?&autoplay=false&radius=true"
-            width="250"
-            height="250"
-            allowtransparency="true"
-            allow="encrypted-media">
-    </iframe>
+    <DeezePlayerComponent TrackId="@this.currentTrack.Id" Size="250" />
     <PlayerComponent Audio="this.currentTrack.Audio" Size="PlayerComponentSize.Large" />
     <div class="actions">
     </div>
