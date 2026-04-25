@@ -1,5 +1,10 @@
 namespace FlashBeat.Maui;
 
+using System.Reflection;
+
+using FlashBeat.Web.Service;
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -15,12 +20,16 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             });
 
+        builder.AddAppSettingsConfiguration();
+
         builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
+
+        builder.Services.AddWebServices();
 
         builder.Services.AddFluentUIComponents();
 
