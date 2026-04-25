@@ -1,4 +1,4 @@
-namespace Memory.Tester.Web.Service;
+namespace FlashBeat.Web.Service;
 
 using FlashBeat.Core.Business;
 using FlashBeat.Web.Service.Services.Interfaces;
