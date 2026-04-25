@@ -1,0 +1,22 @@
+flash-beat-player {
+    display: inline-block;
+    --fb-player-size: 3rem;
+}
+
+    flash-beat-player.small {
+        --fb-player-size: 2rem;
+    }
+
+    flash-beat-player.medium {
+        --fb-player-size: 3rem;
+    }
+
+    flash-beat-player.large {
+        --fb-player-size: 4rem;
+    }
+
+    flash-beat-player ::deep .play-button {
+        min-height: var(--fb-player-size);
+        min-width: var(--fb-player-size);
+        border-radius: 100%;
+    }

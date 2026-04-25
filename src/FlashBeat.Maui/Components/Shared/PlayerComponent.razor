@@ -1,0 +1,25 @@
+@implements IAsyncDisposable
+
+<flash-beat-player class="@this.GetCssClass()">
+    <audio id="flash-beat-player-audio" type="audio/mpeg" />
+    @if (this.isAudioPlaying)
+    {
+        <FluentButton aria-label="Pause"
+                      Appearance="Appearance.Accent"
+                      IconEnd="@this.PauseIcon"
+                      Title="Pause"
+                      Class="play-button"
+                      OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))">
+        </FluentButton>
+    }
+    else
+    {
+        <FluentButton aria-label="Play"
+                      Appearance="Appearance.Accent"
+                      IconEnd="@this.PlayIcon"
+                      Title="Play"
+                      Class="play-button"
+                      OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))">
+        </FluentButton>
+    }
+</flash-beat-player>
