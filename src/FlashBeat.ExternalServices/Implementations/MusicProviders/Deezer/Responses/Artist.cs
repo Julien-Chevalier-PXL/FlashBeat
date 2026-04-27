@@ -11,7 +11,7 @@ internal sealed class Artist
     /// Gets or sets the id of the artist.
     /// </summary>
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the artist.

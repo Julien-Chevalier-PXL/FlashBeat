@@ -45,7 +45,7 @@ internal sealed class DeezerClient : IMusicProvider
 
         using var previewHttpClient = new HttpClient();
         var previewResponse = await previewHttpClient.GetAsync(responseContent!.Preview, cancellationToken).ConfigureAwait(false);
-        var previewStream = await previewResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var previewStream = await previewResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
 
         return new()
         {
@@ -63,7 +63,10 @@ internal sealed class DeezerClient : IMusicProvider
     /// <inheritdoc />
     public async Task<SearchResultDto> SearchAsync(string query, int index = 0, int limit = 25, CancellationToken cancellationToken = default)
     {
-        if(limit > 100)
+        if (string.IsNullOrWhiteSpace(query))
+            return SearchResultDto.Empty;
+
+        if (limit > 100)
             throw new ArgumentOutOfRangeException(nameof(limit), "The limit must be less than or equal to 100.");
 
         var response = await this.httpClient.GetAsync($"search?q={query}&limit={limit}&index={index}", cancellationToken).ConfigureAwait(false);

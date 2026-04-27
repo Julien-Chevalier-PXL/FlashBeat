@@ -11,7 +11,7 @@ internal sealed class Track
     /// Gets or sets the id of the track.
     /// </summary>
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// Gets or sets the title of the track.

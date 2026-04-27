@@ -12,7 +12,7 @@ public record TrackBaseView
     /// <summary>
     /// Gets the id of the track.
     /// </summary>
-    public required int Id { get; init; }
+    public required long Id { get; init; }
 
     /// <summary>
     /// Gets the title of the track.

@@ -6,7 +6,7 @@ namespace FlashBeat.Core.Business.Business.ViewModels;
 public sealed record TrackViewModel : TrackBaseViewModel
 {
     /// <summary>
-    /// Gets the audio data stream of the track.
+    /// Gets the audio data of the track.
     /// </summary>
-    public required Stream Audio { get; init; }
+    public required byte[] Audio { get; init; }
 }

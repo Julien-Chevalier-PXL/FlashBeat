@@ -8,7 +8,7 @@ public sealed record ArtistViewModel
     /// <summary>
     /// Gets the id of the artist.
     /// </summary>
-    public required int Id { get; init; }
+    public required long Id { get; init; }
 
     /// <summary>
     /// Gets the name of the artist.
