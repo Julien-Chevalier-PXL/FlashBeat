@@ -24,9 +24,9 @@ internal sealed class TrackService : ITrackService
     }
 
     /// <inheritdoc />
-    public async Task<ServiceResult<TrackView>> GetRandomTrackAsync()
+    public async Task<ServiceResult<TrackView>> GetRandomTrackAsync(CancellationToken cancellationToken = default)
     {
-        var result = await this.trackBusiness.GetRandomTrackAsync().ConfigureAwait(false);
+        var result = await this.trackBusiness.GetRandomTrackAsync(cancellationToken).ConfigureAwait(false);
 
         return new()
         {

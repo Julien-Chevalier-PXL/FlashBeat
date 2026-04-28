@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FlashBeat.Common\FlashBeat.Common.csproj" />
     <ProjectReference Include="..\FlashBeat.ExternalServices\FlashBeat.ExternalServices.csproj" />
   </ItemGroup>

@@ -2,6 +2,7 @@ namespace FlashBeat.Web.Service.Services.Tracks.Responses;
 
 using System.Diagnostics.CodeAnalysis;
 
+using FlashBeat.Common.Enums;
 using FlashBeat.Core.Business.Business.ViewModels;
 
 /// <summary>
@@ -10,9 +11,10 @@ using FlashBeat.Core.Business.Business.ViewModels;
 public sealed record TrackView : TrackBaseView
 {
     /// <summary>
-    /// Gets the audio data of the track.
+    /// Gets the audio extracts of the track, where the key is the length of the extract and the value is the audio data
+    /// of the extract.
     /// </summary>
-    public required byte[] Audio { get; init; }
+    public required Dictionary<MusicalExtractLength, byte[]> Extracts { get; init; } = [];
 
     /// <summary>
     /// Method to create a <see cref="TrackView"/> from a <see cref="TrackViewModel"/>.
@@ -27,7 +29,7 @@ public sealed record TrackView : TrackBaseView
                 Id = viewModel.Id,
                 Title = viewModel.Title,
                 Artist = ArtistView.FromViewModel(viewModel.Artist),
-                Audio = viewModel.Audio,
+                Extracts = viewModel.Extracts,
             }
             : null;
 }

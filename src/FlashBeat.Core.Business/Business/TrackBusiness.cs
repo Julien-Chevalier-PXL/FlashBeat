@@ -1,11 +1,15 @@
 namespace FlashBeat.Core.Business.Business;
 
+using FlashBeat.Common.Enums;
 using FlashBeat.Common.Pagination;
 using FlashBeat.Core.Business.Business.Interfaces;
 using FlashBeat.Core.Business.Business.Models;
 using FlashBeat.Core.Business.Business.ViewModels;
 using FlashBeat.Core.Business.Dtos;
 using FlashBeat.ExternalServices.Interfaces;
+
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 internal sealed class TrackBusiness : ITrackBusiness
 {
@@ -29,6 +33,8 @@ internal sealed class TrackBusiness : ITrackBusiness
         if (result is null)
             return BusinessResult<TrackViewModel>.Error("Track not found.");
 
+        var audios = GetQuizExtracts(result.Audio).ToDictionary(x => x.ExtractLength, x => x.Data);
+
         return BusinessResult<TrackViewModel>.Success(new TrackViewModel
         {
             Id = result.Id,
@@ -38,7 +44,7 @@ internal sealed class TrackBusiness : ITrackBusiness
                 Id = result.Artist.Id,
                 Name = result.Artist.Name
             },
-            Audio = result.Audio,
+            Extracts = audios,
         });
     }
 
@@ -62,5 +68,24 @@ internal sealed class TrackBusiness : ITrackBusiness
                     },
                 })],
             });
+    }
+
+    private static IEnumerable<(MusicalExtractLength ExtractLength, byte[] Data)> GetQuizExtracts(byte[] trackData)
+    {
+        using var mp3Stream = new MemoryStream(trackData);
+        using var mp3Reader = new Mp3FileReader(mp3Stream);
+
+        foreach (var length in Enum.GetValues<MusicalExtractLength>())
+        {
+            mp3Reader.Position = 0;
+            var sampleProvider = mp3Reader.ToSampleProvider();
+            var offsetProvider = new OffsetSampleProvider(sampleProvider)
+            {
+                Take = TimeSpan.FromMilliseconds((int)length),
+            };
+            using var outMs = new MemoryStream();
+            WaveFileWriter.WriteWavFileToStream(outMs, offsetProvider.ToWaveProvider());
+            yield return (length, outMs.ToArray());
+        }
     }
 }
