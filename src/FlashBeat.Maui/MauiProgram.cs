@@ -1,10 +1,7 @@
 namespace FlashBeat.Maui;
 
-using System.Reflection;
-
 using FlashBeat.Web.Service;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
 

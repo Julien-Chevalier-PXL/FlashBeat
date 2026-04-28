@@ -1,4 +1,4 @@
-namespace FlashBeat.Maui.Components.Pages.ViewModels;
+namespace FlashBeat.Maui.Components.Shared.ViewModels;
 
 /// <summary>
 /// Record which represents the view model of an artist.

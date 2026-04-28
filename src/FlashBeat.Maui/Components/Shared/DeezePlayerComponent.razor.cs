@@ -9,7 +9,7 @@ public sealed partial class DeezePlayerComponent
 {
     [Parameter]
     [EditorRequired]
-    public int TrackId { get; set; }
+    public long TrackId { get; set; }
 
     /// <summary>
     /// Gets or sets the size (height and width), in px, of the component.

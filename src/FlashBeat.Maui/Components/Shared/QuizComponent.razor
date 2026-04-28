@@ -1,0 +1,79 @@
+@using FlashBeat.Common.Enums
+@using FlashBeat.Common.Extensions
+@using FlashBeat.Maui.Components.Shared.Enums
+@using FlashBeat.Maui.Components.Shared.ViewModels
+
+<flash-beat-quiz>
+    <FluentCard Class="guesses">
+        @foreach (var currentGuess in this.guesses)
+        {
+            @if (currentGuess is not null)
+            {
+                <div class="guess">
+                    <FluentMessageBar AllowDismiss="false"
+                                      Intent="@GetMessageIntent(currentGuess.Type)">
+                        @currentGuess.Track.DisplayText
+                    </FluentMessageBar>
+                </div>
+            }
+            else
+            {
+                <div class="guess">
+                    <FluentMessageBar AllowDismiss="false"
+                                      Intent="@MessageIntent.Info">
+                        Passé
+                    </FluentMessageBar>
+                </div>
+            }
+        }
+        @for (var i = 0; i < 5 - this.guesses.Count; i++)
+        {
+            <div class="guess">
+                <FluentMessageBar AllowDismiss="false" Intent="null" />
+            </div>
+        }
+    </FluentCard>
+
+    <PlayerComponent Audio="this.currentExtract" Size="PlayerComponentSize.Large" />
+
+    <div class="guess-actions">
+        @if (this.isTimeLocked)
+        {
+            <FluentButton IconEnd="@(new Icons.Regular.Size24.LockClosed())" Title="Temps vérouillé" OnClick="@this.ToggleTimeLock" />
+        }
+        else
+        {
+            <FluentButton IconEnd="@(new Icons.Regular.Size24.LockOpen())" Title="Temps dévérouillé" OnClick="@this.ToggleTimeLock" />
+        }
+
+        <FluentAutocomplete TOption="TrackBaseViewModel"
+                            Placeholder="Chercher une musique"
+                            MaximumOptionsSearch="10"
+                            Multiple="false"
+                            OnOptionsSearch="this.SearchTrack"
+                            ImmediateDelay="500"
+                            Autofocus="true"
+                            OptionText="@(track => track.DisplayText)"
+                            ShowProgressIndicator="true"
+                            @bind-SelectedOption="this.currentSelectedGuessTrack"
+                            Width="100%" />
+
+        @if (this.currentSelectedGuessTrack is not null)
+        {
+            <FluentButton OnClick="@this.SubmitAnswer" Disabled="@(this.currentSelectedGuessTrack is null)">Valider</FluentButton>
+        }
+        else if (this.currentExtractLength < EnumExtensions.Last<MusicalExtractLength>())
+        {
+            <FluentButton OnClick="@this.SkipAsync">Passer</FluentButton>
+        }
+        else
+        {
+            <FluentButton OnClick="@this.GiveUpAsync">Abandonner</FluentButton>
+        }
+    </div>
+
+    @if (shouldShowAnswer)
+    {
+        <DeezePlayerComponent TrackId="@this.Track.Id" Size="250" />
+    }
+</flash-beat-quiz>

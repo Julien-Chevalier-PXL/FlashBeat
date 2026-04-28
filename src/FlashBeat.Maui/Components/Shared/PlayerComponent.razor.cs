@@ -14,9 +14,11 @@ using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 public sealed partial class PlayerComponent : IAsyncDisposable
 {
     private readonly IJSRuntime jsRuntime;
+    private readonly Guid elementId = Guid.NewGuid();
 
     private IJSObjectReference? jsModule;
 
+    private bool audioChanged = false;
     private bool isAudioPlaying = false;
 
     /// <summary>
@@ -30,7 +32,7 @@ public sealed partial class PlayerComponent : IAsyncDisposable
 
     [Parameter]
     [EditorRequired]
-    public Stream Audio { get; set; } = Stream.Null;
+    public byte[] Audio { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the size of the player component.
@@ -38,6 +40,12 @@ public sealed partial class PlayerComponent : IAsyncDisposable
     /// <remarks>Default is <see cref="PlayerComponentSize.Medium"/>.</remarks>
     [Parameter]
     public PlayerComponentSize Size { get; set; } = PlayerComponentSize.Medium;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show a stop button.
+    /// </summary>
+    [Parameter]
+    public bool ShowStopButton { get; set; } = false;
 
     private Icon PauseIcon
         => this.Size switch
@@ -62,32 +70,25 @@ public sealed partial class PlayerComponent : IAsyncDisposable
         this.jsModule = await this.jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./Components/Shared/{nameof(PlayerComponent)}.razor.js");
     }
 
-    protected override async Task OnParametersSetAsync()
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (this.jsModule is not null)
+        if (parameters.TryGetValue<byte[]>(nameof(this.Audio), out var audio)
+            && this.Audio != audio
+            && audio.Length > 0)
         {
-            using var contentStreamReference = new DotNetStreamReference(this.Audio);
-            await this.jsModule.InvokeVoidAsync("SetupAudioFileStream", contentStreamReference);
+            this.audioChanged = true;
         }
+
+        return base.SetParametersAsync(parameters);
     }
 
-    private async Task PlayOrPauseAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        if (this.jsModule is null)
-            return;
-
-        try
+        if (this.jsModule is not null && this.Audio.Length > 0 && this.audioChanged)
         {
-            if (this.isAudioPlaying)
-                await this.jsModule.InvokeVoidAsync("PauseAudioFileStream");
-            else
-                await this.jsModule.InvokeVoidAsync("ResumeAudioFileStream");
-
-            this.isAudioPlaying = !this.isAudioPlaying;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error during play/pause: {ex.Message}");
+            using var contentStreamReference = new DotNetStreamReference(new MemoryStream(this.Audio));
+            await this.jsModule.InvokeVoidAsync("SetupAudioFileStream", this.elementId, contentStreamReference);
+            this.audioChanged = false;
         }
     }
 
@@ -96,8 +97,62 @@ public sealed partial class PlayerComponent : IAsyncDisposable
         if (this.jsModule is null)
             return;
 
-        await this.jsModule.InvokeVoidAsync("CleanupAudio");
+        await this.jsModule.InvokeVoidAsync("CleanupAudio", this.elementId);
         await this.jsModule.DisposeAsync();
+    }
+
+    private async Task PlayOrPauseAsync()
+    {
+        if (this.isAudioPlaying)
+            await this.PauseAsync().ConfigureAwait(true);
+        else
+            await this.PlayAsync().ConfigureAwait(true);
+    }
+
+    private async Task StopAsync()
+    {
+        if (this.jsModule is null)
+            return;
+
+        await this.jsModule.InvokeVoidAsync("StopAudioFileStream", this.elementId).ConfigureAwait(true);
+        this.isAudioPlaying = false;
+    }
+
+    private async Task PlayAsync()
+    {
+        if (this.isAudioPlaying || this.jsModule is null)
+            return;
+
+        try
+        {
+            await this.jsModule.InvokeVoidAsync("ResumeAudioFileStream", this.elementId).ConfigureAwait(true);
+            this.isAudioPlaying = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during play: {ex.Message}");
+        }
+    }
+
+    private async Task PauseAsync()
+    {
+        if (!this.isAudioPlaying || this.jsModule is null)
+            return;
+
+        try
+        {
+            await this.jsModule.InvokeVoidAsync("PauseAudioFileStream", this.elementId).ConfigureAwait(true);
+            this.isAudioPlaying = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during pause: {ex.Message}");
+        }
+    }
+
+    private void OnAudioEnded()
+    {
+        this.isAudioPlaying = false;
     }
 
     private string GetCssClass()

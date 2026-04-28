@@ -15,8 +15,9 @@ flash-beat-player {
         --fb-player-size: 4rem;
     }
 
-    flash-beat-player ::deep .play-button {
+    flash-beat-player ::deep .player-button {
         min-height: var(--fb-player-size);
         min-width: var(--fb-player-size);
         border-radius: 100%;
+        margin: 0.25rem;
     }

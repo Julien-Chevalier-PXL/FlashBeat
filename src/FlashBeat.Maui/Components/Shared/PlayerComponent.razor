@@ -1,14 +1,14 @@
 @implements IAsyncDisposable
 
 <flash-beat-player class="@this.GetCssClass()">
-    <audio id="flash-beat-player-audio" type="audio/mpeg" />
+    <audio id="@($"flash-beat-player-audio-{this.elementId}")" type="audio/mpeg" onended="@this.OnAudioEnded" />
     @if (this.isAudioPlaying)
     {
         <FluentButton aria-label="Pause"
                       Appearance="Appearance.Accent"
                       IconEnd="@this.PauseIcon"
                       Title="Pause"
-                      Class="play-button"
+                      Class="player-button"
                       OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))">
         </FluentButton>
     }
@@ -18,8 +18,18 @@
                       Appearance="Appearance.Accent"
                       IconEnd="@this.PlayIcon"
                       Title="Play"
-                      Class="play-button"
+                      Class="player-button"
                       OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))">
+        </FluentButton>
+    }
+
+    @if(ShowStopButton)
+    {
+        <FluentButton aria-label="Stop"
+                      Appearance="Appearance.Lightweight"
+                      IconEnd="@(new Icons.Regular.Size24.Stop())"
+                      Class="player-button"
+                      OnClick="@(async (_) => await this.StopAsync().ConfigureAwait(true))">
         </FluentButton>
     }
 </flash-beat-player>

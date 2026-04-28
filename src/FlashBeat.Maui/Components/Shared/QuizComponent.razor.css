@@ -1,0 +1,31 @@
+flash-beat-quiz {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+    flash-beat-quiz ::deep .guesses {
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+        width: 50%;
+        height: 55%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+        flash-beat-quiz ::deep .guesses .guess {
+            width: 85%;
+        }
+
+    flash-beat-quiz .guess-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: center;
+        width: 50%;
+    }

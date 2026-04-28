@@ -1,49 +1,49 @@
-let currentAudio = null;
-let currentUrl = null;
+let currentAudio = {};
+let currentUrl = {};
 
-export async function SetupAudioFileStream(contentStreamReference) {
+export async function SetupAudioFileStream(elementId, contentStreamReference) {
     // Clean up previous audio if exists
-    if (currentAudio) {
-        currentAudio.pause();
+    if (currentAudio[elementId]) {
+        currentAudio[elementId].pause();
         URL.revokeObjectURL(currentUrl);
     }
 
     const arrayBuffer = await contentStreamReference.arrayBuffer();
     const blob = new Blob([arrayBuffer]);
-    currentUrl = URL.createObjectURL(blob);
-    
-    currentAudio = document.getElementById('flash-beat-player-audio');
-    currentAudio.src = currentUrl;
-    currentAudio.type = 'audio/mpeg';
-    currentAudio.volume = 0.5;
-    currentAudio.load();
+    currentUrl[elementId] = URL.createObjectURL(blob);
+
+    currentAudio[elementId] = document.getElementById(`flash-beat-player-audio-${elementId}`);
+    currentAudio[elementId].src = currentUrl[elementId];
+    currentAudio[elementId].type = 'audio/mpeg';
+    currentAudio[elementId].volume = 0.5;
+    currentAudio[elementId].load();
 }
 
-export function PauseAudioFileStream() {
-    if (currentAudio && !currentAudio.paused) {
-        currentAudio.pause();
+export function PauseAudioFileStream(elementId) {
+    if (currentAudio[elementId] && !currentAudio[elementId].paused) {
+        currentAudio[elementId].pause();
     }
 }
 
-export function ResumeAudioFileStream() {
-    if (currentAudio && currentAudio.paused) {
-        currentAudio.play();
+export function ResumeAudioFileStream(elementId) {
+    if (currentAudio[elementId] && currentAudio[elementId].paused) {
+        currentAudio[elementId].play();
     }
 }
 
-export function StopAudioFileStream() {
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
+export function StopAudioFileStream(elementId) {
+    if (currentAudio[elementId]) {
+        currentAudio[elementId].pause();
+        currentAudio[elementId].currentTime = 0;
     }
 }
 
-export function CleanupAudio() {
-    if (currentAudio) {
-        currentAudio.pause();
-        document.body.removeChild(currentAudio);
-        URL.revokeObjectURL(currentUrl);
-        currentAudio = null;
-        currentUrl = null;
+export function CleanupAudio(elementId) {
+    if (currentAudio[elementId]) {
+        currentAudio[elementId].pause();
+        currentAudio[elementId].remove();
+        URL.revokeObjectURL(currentUrl[elementId]);
+        currentAudio[elementId] = null;
+        currentUrl[elementId] = null;
     }
 }

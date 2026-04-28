@@ -1,6 +1,6 @@
 namespace FlashBeat.Maui.Components.Pages;
 
-using FlashBeat.Maui.Components.Pages.ViewModels;
+using FlashBeat.Maui.Components.Shared.ViewModels;
 using FlashBeat.Web.Service.Services.Interfaces;
 
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -15,7 +15,7 @@ public sealed partial class Infinite
 
     private bool isLoading = false;
 
-    private TrackViewModel currentTrack = new();
+    private TrackViewModel currentTrack = TrackViewModel.Default;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Infinite"/> class.
@@ -50,7 +50,7 @@ public sealed partial class Infinite
                     Id = result.Artist.Id,
                     Name = result.Artist.Name,
                 },
-                Audio = result.Audio,
+                Extracts = result.Extracts,
             };
         }
         else
