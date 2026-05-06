@@ -16,6 +16,15 @@ public interface IMusicProvider
     Task<TrackDto?> GetTrackAsync(int trackId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Method to get a top chart track by its index and genre id.
+    /// </summary>
+    /// <param name="index">The index in the chart.</param>
+    /// <param name="genreId">The id of the genre. By default 0 (all genres).</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation containing a top chart track.</returns>
+    Task<TrackDto?> GetTopChartTrackAsync(int index = 0, int? genreId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Method to search.
     /// </summary>
     /// <param name="query">The query to search for.</param>

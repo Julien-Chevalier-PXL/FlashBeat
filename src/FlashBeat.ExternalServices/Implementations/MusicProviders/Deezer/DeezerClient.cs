@@ -43,19 +43,53 @@ internal sealed class DeezerClient : IMusicProvider
         if (responseContent is null)
             return null;
 
-        using var previewHttpClient = new HttpClient();
-        var previewResponse = await previewHttpClient.GetAsync(responseContent!.Preview, cancellationToken).ConfigureAwait(false);
-        var previewStream = await previewResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+        var previewData = await GetTrackPreviewData(responseContent.Preview, cancellationToken).ConfigureAwait(false);
 
         return new()
         {
             Id = responseContent.Id,
             Title = responseContent.Title,
-            Audio = previewStream,
+            Audio = previewData,
             Artist = new()
             {
                 Id = responseContent.Artist.Id,
                 Name = responseContent.Artist.Name,
+            }
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<TrackDto?> GetTopChartTrackAsync(int index = 0, int? genreId = null, CancellationToken cancellationToken = default)
+    {
+        if (index > 99)
+            throw new ArgumentOutOfRangeException(nameof(index), "The index must be less than or equal to 99.");
+
+        var response = await this.httpClient.GetAsync($"chart/{genreId ?? 0}/tracks?limit=1&index={index}", cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorResponseContent = await response.Content.ReadFromJsonAsync<Error>(cancellationToken).ConfigureAwait(false);
+            throw new Exception($"Error while contacting the Deezer API: {errorResponseContent?.Message}");
+        }
+
+        var responseContent = await response.Content.ReadFromJsonAsync<CommonResult<Track>>(cancellationToken).ConfigureAwait(false);
+        if (responseContent is null)
+            return null;
+
+        var track = responseContent.Data.FirstOrDefault();
+        if(track is null)
+            return null;
+
+        var previewData = await GetTrackPreviewData(track.Preview, cancellationToken).ConfigureAwait(false);
+
+        return new TrackDto
+        {
+            Id = track.Id,
+            Title = track.Title,
+            Audio = previewData,
+            Artist = new ArtistDto
+            {
+                Id = track.Artist.Id,
+                Name = track.Artist.Name,
             }
         };
     }
@@ -76,14 +110,14 @@ internal sealed class DeezerClient : IMusicProvider
             throw new Exception($"Error while contacting the Deezer API: {errorResponseContent?.Message}");
         }
 
-        var responseContent = await response.Content.ReadFromJsonAsync<SearchResult>(cancellationToken).ConfigureAwait(false);
+        var responseContent = await response.Content.ReadFromJsonAsync<CommonResult<Track>>(cancellationToken).ConfigureAwait(false);
         if (responseContent is null)
             return SearchResultDto.Empty;
 
         return new()
         {
             Total = responseContent.Total,
-            Tracks = [.. responseContent.Tracks.Select(t => new TrackBaseDto
+            Tracks = [.. responseContent.Data.Select(t => new TrackBaseDto
             {
                 Id = t.Id,
                 Title = t.Title,
@@ -94,5 +128,12 @@ internal sealed class DeezerClient : IMusicProvider
                 },
             })],
         };
+    }
+
+    private static async Task<byte[]> GetTrackPreviewData(Uri previewUri, CancellationToken cancellationToken = default)
+    {
+        using var previewHttpClient = new HttpClient();
+        var previewResponse = await previewHttpClient.GetAsync(previewUri, cancellationToken).ConfigureAwait(false);
+        return await previewResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
     }
 }

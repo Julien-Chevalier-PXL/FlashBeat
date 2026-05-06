@@ -27,9 +27,9 @@ internal sealed class TrackBusiness : ITrackBusiness
     /// <inheritdoc />
     public async Task<BusinessResult<TrackViewModel>> GetRandomTrackAsync(CancellationToken cancellationToken = default)
     {
-        var randomId = 13789091; // Orelsan - Elle viendra quand même: hardcoded for now, should be random in the future
+        var randomId = Random.Shared.Next(100);
 
-        var result = await this.musicProvider.GetTrackAsync(randomId, cancellationToken).ConfigureAwait(false);
+        var result = await this.musicProvider.GetTopChartTrackAsync(randomId, cancellationToken: cancellationToken).ConfigureAwait(false);
         if (result is null)
             return BusinessResult<TrackViewModel>.Error("Track not found.");
 
