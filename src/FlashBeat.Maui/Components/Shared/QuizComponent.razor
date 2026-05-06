@@ -26,7 +26,7 @@
                 </div>
             }
         }
-        @for (var i = 0; i < 5 - this.guesses.Count; i++)
+        @for (var i = 0; i < MusicalExtractLengthCount - this.guesses.Count; i++)
         {
             <div class="guess">
                 <FluentMessageBar AllowDismiss="false" Intent="null" />
@@ -34,14 +34,10 @@
         }
     </FluentCard>
 
-    <QuizPlayerProgressBar @ref="this.quizPlayerProgressBar" ExtractLength="this.currentExtractLength" />
-    <PlayerComponent @ref="this.playerComponent"
-                     Audio="this.currentExtract"
-                     Size="PlayerComponentSize.Large"
-                     OnPlay="this.OnPlayEventHandlerAsync"
-                     OnPause="this.OnPauseEventHandlerAsync"
-                     OnStop="this.OnStopEventHandlerAsync"
-                     OnAudioEnded="this.OnAudioEndedEventHandlerAsync" />
+    <QuizPlayerComponent @ref="this.quizPlayerComponent"
+                         ExtractLength="this.currentExtractLength"
+                         Extract="this.currentExtract"
+                         Disabled="this.quizStatus is not QuizStatus.OnGoing" />
 
     <div class="guess-actions">
         @if (this.isTimeLocked)

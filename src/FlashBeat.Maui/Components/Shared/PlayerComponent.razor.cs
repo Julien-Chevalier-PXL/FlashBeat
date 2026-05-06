@@ -71,6 +71,12 @@ public sealed partial class PlayerComponent : IAsyncDisposable
     [Parameter]
     public EventCallback OnAudioEnded { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the component is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
     private Icon PauseIcon
         => this.Size switch
         {

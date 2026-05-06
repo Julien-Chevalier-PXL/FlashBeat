@@ -55,6 +55,15 @@ public static class EnumExtensions
     }
 
     /// <summary>
+    /// Method to get the count of the values of an enum.
+    /// </summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <returns>The count of the values of the enum <typeparamref name="TEnum"/>.</returns>
+    public static int Count<TEnum>()
+        where TEnum : struct, Enum
+        => Enum.GetValues<TEnum>().Length;
+
+    /// <summary>
     /// Method to get the value of the <see cref="DescriptionAttribute"/> of an enum value.
     /// </summary>
     /// <typeparam name="TEnum">The type of the enum.</typeparam>

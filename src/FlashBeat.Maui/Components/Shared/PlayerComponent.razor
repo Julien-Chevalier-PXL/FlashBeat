@@ -10,7 +10,8 @@
                       IconEnd="@this.PauseIcon"
                       Title="Pause"
                       Class="player-button"
-                      OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))">
+                      OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))"
+                      Disabled="this.Disabled">
         </FluentButton>
     }
     else
@@ -20,17 +21,19 @@
                       IconEnd="@this.PlayIcon"
                       Title="Play"
                       Class="player-button"
-                      OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))">
+                      OnClick="@(async (_) => await this.PlayOrPauseAsync().ConfigureAwait(true))"
+                      Disabled="this.Disabled">
         </FluentButton>
     }
 
-    @if(ShowStopButton)
+    @if (ShowStopButton)
     {
         <FluentButton aria-label="Stop"
                       Appearance="Appearance.Lightweight"
                       IconEnd="@(new Icons.Regular.Size24.Stop())"
                       Class="player-button"
-                      OnClick="@(async (_) => await this.StopAsync().ConfigureAwait(true))">
+                      OnClick="@(async (_) => await this.StopAsync().ConfigureAwait(true))"
+                      Disabled="this.Disabled">
         </FluentButton>
     }
 </flash-beat-player>

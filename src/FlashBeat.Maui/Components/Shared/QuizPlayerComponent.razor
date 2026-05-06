@@ -1,0 +1,13 @@
+@using FlashBeat.Maui.Components.Shared.Enums
+
+<quiz-player-component>
+    <QuizPlayerProgressBar @ref="this.quizPlayerProgressBar" ExtractLength="this.ExtractLength" />
+    <PlayerComponent @ref="this.playerComponent"
+                     Audio="this.Extract"
+                     Size="PlayerComponentSize.Large"
+                     OnPlay="this.OnPlayEventHandlerAsync"
+                     OnPause="this.OnPauseEventHandlerAsync"
+                     OnStop="this.OnStopEventHandlerAsync"
+                     OnAudioEnded="this.OnAudioEndedEventHandlerAsync"
+                     Disabled="this.Disabled" />
+</quiz-player-component>
