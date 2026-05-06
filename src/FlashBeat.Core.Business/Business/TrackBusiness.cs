@@ -48,6 +48,29 @@ internal sealed class TrackBusiness : ITrackBusiness
         });
     }
 
+    public async Task<BusinessResult<TrackViewModel>> GetRandomTrackFromSelectionAsync(SelectionQuery query, CancellationToken cancellationToken = default)
+    {
+        var randomId = 13789091; // Orelsan - Elle viendra quand même: hardcoded for now, should be random in the future
+
+        var result = await this.musicProvider.GetTrackAsync(randomId, cancellationToken).ConfigureAwait(false);
+        if (result is null)
+            return BusinessResult<TrackViewModel>.Error("Track not found.");
+
+        var audios = GetQuizExtracts(result.Audio).ToDictionary(x => x.ExtractLength, x => x.Data);
+
+        return BusinessResult<TrackViewModel>.Success(new TrackViewModel
+        {
+            Id = result.Id,
+            Title = result.Title,
+            Artist = new ArtistViewModel
+            {
+                Id = result.Artist.Id,
+                Name = result.Artist.Name
+            },
+            Extracts = audios,
+        });
+    }
+
     /// <inheritdoc />
     public async Task<BusinessResult<PageResult<TrackBaseViewModel>>> SearchAsync(SearchQuery query, CancellationToken cancellationToken = default)
     {
