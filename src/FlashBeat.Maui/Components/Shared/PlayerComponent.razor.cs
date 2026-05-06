@@ -47,6 +47,30 @@ public sealed partial class PlayerComponent : IAsyncDisposable
     [Parameter]
     public bool ShowStopButton { get; set; } = false;
 
+    /// <summary>
+    /// Gets or sets a callback that is invoked when the audio starts playing.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnPlay { get; set; }
+
+    /// <summary>
+    /// Gets or sets a callback that is invoked when the audio is paused.
+    /// </summary>
+    [Parameter]
+    public EventCallback<double> OnPause { get; set; }
+
+    /// <summary>
+    /// Gets or sets a callback that is invoked when the audio is stopped.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnStop { get; set; }
+
+    /// <summary>
+    /// Gets or sets a callback that is invoked when the audio has ended.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnAudioEnded { get; set; }
+
     private Icon PauseIcon
         => this.Size switch
         {
@@ -86,6 +110,7 @@ public sealed partial class PlayerComponent : IAsyncDisposable
     {
         if (this.jsModule is not null && this.Audio.Length > 0 && this.audioChanged)
         {
+            await this.PauseAsync().ConfigureAwait(true);
             using var contentStreamReference = new DotNetStreamReference(new MemoryStream(this.Audio));
             await this.jsModule.InvokeVoidAsync("SetupAudioFileStream", this.elementId, contentStreamReference);
             this.audioChanged = false;
@@ -101,7 +126,7 @@ public sealed partial class PlayerComponent : IAsyncDisposable
         await this.jsModule.DisposeAsync();
     }
 
-    private async Task PlayOrPauseAsync()
+    public async Task PlayOrPauseAsync()
     {
         if (this.isAudioPlaying)
             await this.PauseAsync().ConfigureAwait(true);
@@ -109,16 +134,18 @@ public sealed partial class PlayerComponent : IAsyncDisposable
             await this.PlayAsync().ConfigureAwait(true);
     }
 
-    private async Task StopAsync()
+    public async Task StopAsync()
     {
         if (this.jsModule is null)
             return;
 
         await this.jsModule.InvokeVoidAsync("StopAudioFileStream", this.elementId).ConfigureAwait(true);
+        await this.OnStop.InvokeAsync().ConfigureAwait(true);
+
         this.isAudioPlaying = false;
     }
 
-    private async Task PlayAsync()
+    public async Task PlayAsync()
     {
         if (this.isAudioPlaying || this.jsModule is null)
             return;
@@ -126,6 +153,8 @@ public sealed partial class PlayerComponent : IAsyncDisposable
         try
         {
             await this.jsModule.InvokeVoidAsync("ResumeAudioFileStream", this.elementId).ConfigureAwait(true);
+            await this.OnPlay.InvokeAsync().ConfigureAwait(true);
+
             this.isAudioPlaying = true;
         }
         catch (Exception ex)
@@ -134,14 +163,16 @@ public sealed partial class PlayerComponent : IAsyncDisposable
         }
     }
 
-    private async Task PauseAsync()
+    public async Task PauseAsync()
     {
         if (!this.isAudioPlaying || this.jsModule is null)
             return;
 
         try
         {
-            await this.jsModule.InvokeVoidAsync("PauseAudioFileStream", this.elementId).ConfigureAwait(true);
+            var audioTime = await this.jsModule.InvokeAsync<double>("PauseAudioFileStream", this.elementId).ConfigureAwait(true);
+            await this.OnPause.InvokeAsync(audioTime).ConfigureAwait(true);
+
             this.isAudioPlaying = false;
         }
         catch (Exception ex)
@@ -150,8 +181,10 @@ public sealed partial class PlayerComponent : IAsyncDisposable
         }
     }
 
-    private void OnAudioEnded()
+    private async Task OnAudioEndedAsync()
     {
+        await this.OnAudioEnded.InvokeAsync().ConfigureAwait(true);
+
         this.isAudioPlaying = false;
     }
 

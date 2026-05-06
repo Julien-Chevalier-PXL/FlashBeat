@@ -1,7 +1,8 @@
 @implements IAsyncDisposable
 
 <flash-beat-player class="@this.GetCssClass()">
-    <audio id="@($"flash-beat-player-audio-{this.elementId}")" type="audio/mpeg" onended="@this.OnAudioEnded" />
+    <audio id="@($"flash-beat-player-audio-{this.elementId}")" type="audio/mpeg" onended="@this.OnAudioEndedAsync" />
+
     @if (this.isAudioPlaying)
     {
         <FluentButton aria-label="Pause"

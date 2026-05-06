@@ -22,6 +22,8 @@ export async function SetupAudioFileStream(elementId, contentStreamReference) {
 export function PauseAudioFileStream(elementId) {
     if (currentAudio[elementId] && !currentAudio[elementId].paused) {
         currentAudio[elementId].pause();
+
+        return currentAudio[elementId].currentTime;
     }
 }
 

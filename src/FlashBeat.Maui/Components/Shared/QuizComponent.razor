@@ -34,7 +34,14 @@
         }
     </FluentCard>
 
-    <PlayerComponent Audio="this.currentExtract" Size="PlayerComponentSize.Large" />
+    <QuizPlayerProgressBar @ref="this.quizPlayerProgressBar" ExtractLength="this.currentExtractLength" />
+    <PlayerComponent @ref="this.playerComponent"
+                     Audio="this.currentExtract"
+                     Size="PlayerComponentSize.Large"
+                     OnPlay="this.OnPlayEventHandlerAsync"
+                     OnPause="this.OnPauseEventHandlerAsync"
+                     OnStop="this.OnStopEventHandlerAsync"
+                     OnAudioEnded="this.OnAudioEndedEventHandlerAsync" />
 
     <div class="guess-actions">
         @if (this.isTimeLocked)
@@ -56,19 +63,27 @@
                             OptionText="@(track => track.DisplayText)"
                             ShowProgressIndicator="true"
                             @bind-SelectedOption="this.currentSelectedGuessTrack"
+                            Disabled="this.quizStatus is not QuizStatus.OnGoing"
                             Width="100%" />
 
-        @if (this.currentSelectedGuessTrack is not null)
+        @if (this.quizStatus is QuizStatus.OnGoing)
         {
-            <FluentButton OnClick="@this.SubmitAnswerAsync" Disabled="@(this.currentSelectedGuessTrack is null)">Valider</FluentButton>
-        }
-        else if (this.currentExtractLength < EnumExtensions.Last<MusicalExtractLength>())
-        {
-            <FluentButton OnClick="@this.SkipAsync">Passer</FluentButton>
+            @if (this.currentSelectedGuessTrack is not null)
+            {
+                <FluentButton Appearance="Appearance.Accent" OnClick="@this.SubmitAnswerAsync" Disabled="@(this.currentSelectedGuessTrack is null)">Valider</FluentButton>
+            }
+            else if (this.currentExtractLength < EnumExtensions.Last<MusicalExtractLength>())
+            {
+                <FluentButton OnClick="@this.SkipAsync">Passer</FluentButton>
+            }
+            else
+            {
+                <FluentButton Disabled="this.quizStatus is not QuizStatus.OnGoing" OnClick="@this.GiveUpAsync">Abandonner</FluentButton>
+            }
         }
         else
         {
-            <FluentButton Disabled="this.quizStatus is not QuizStatus.OnGoing" OnClick="@this.GiveUpAsync">Abandonner</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="this.ShowResultDialogAsync">Résultat</FluentButton>
         }
     </div>
 </flash-beat-quiz>

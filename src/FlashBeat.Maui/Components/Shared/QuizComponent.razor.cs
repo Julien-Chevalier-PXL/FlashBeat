@@ -26,6 +26,9 @@ public partial class QuizComponent : IDisposable
     [EditorRequired]
     public TrackViewModel Track { get; set; } = TrackViewModel.Default;
 
+    private PlayerComponent? playerComponent;
+    private QuizPlayerProgressBar? quizPlayerProgressBar;
+
     private CancellationTokenSource cancellationTokenSource = new();
     private QuizStatus quizStatus = QuizStatus.OnGoing;
     private MusicalExtractLength currentExtractLength = MusicalExtractLength.PointOneSeconds;
@@ -45,6 +48,7 @@ public partial class QuizComponent : IDisposable
         this.dialogService = dialogService;
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (this.Track != TrackViewModel.Default)
@@ -130,12 +134,22 @@ public partial class QuizComponent : IDisposable
         {
             this.UpdateCurrentExtract(this.currentExtractLength.Next());
         }
+
+        if (this.quizPlayerProgressBar is not null)
+            await this.quizPlayerProgressBar.ResetAsync().ConfigureAwait(true);
     }
 
     private async Task GiveUpAsync()
     {
         this.guesses.Add(null);
         this.quizStatus = QuizStatus.Lost;
+
+        if (this.playerComponent is not null)
+            await this.playerComponent.StopAsync().ConfigureAwait(true);
+
+        if (this.quizPlayerProgressBar is not null)
+            await this.quizPlayerProgressBar.ResetAsync().ConfigureAwait(true);
+
         await this.ShowResultDialogAsync().ConfigureAwait(true);
     }
 
@@ -166,10 +180,34 @@ public partial class QuizComponent : IDisposable
 
         var dialog = await this.dialogService.ShowDialogAsync<QuizResultDialog>(quizResult, dialogParameters).ConfigureAwait(true);
         var dialogResult = await dialog.Result.ConfigureAwait(true);
-        if(dialogResult.Data is bool)
+        if (dialogResult.Data is bool)
         {
             // TODO: Send event to parent to start new quiz
         }
+    }
+
+    private async Task OnPlayEventHandlerAsync()
+    {
+        if (this.quizPlayerProgressBar is not null)
+            await this.quizPlayerProgressBar.PlayAsync().ConfigureAwait(true);
+    }
+
+    private async Task OnPauseEventHandlerAsync(double audioTime)
+    {
+        if (this.quizPlayerProgressBar is not null)
+            await this.quizPlayerProgressBar.PauseAsync(audioTime).ConfigureAwait(true);
+    }
+
+    private async Task OnStopEventHandlerAsync()
+    {
+        if (this.quizPlayerProgressBar is not null)
+            await this.quizPlayerProgressBar.ResetAsync().ConfigureAwait(true);
+    }
+
+    private async Task OnAudioEndedEventHandlerAsync()
+    {
+        if (this.quizPlayerProgressBar is not null)
+            await this.quizPlayerProgressBar.PlayEndedAsync().ConfigureAwait(true);
     }
 
     private void ToggleTimeLock()

@@ -1,0 +1,57 @@
+quiz-player-progress-bar {
+    display: block;
+    min-height: 20px;
+    min-width: 50%;
+}
+
+    quiz-player-progress-bar .qp-track {
+        position: relative;
+        height: 12px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    quiz-player-progress-bar .qp-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 0%;
+        background: #4caf50;
+        z-index: 1;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-play-state: paused;
+    }
+
+    quiz-player-progress-bar .qp-fill.anim-a {
+        animation-name: qp-progress-a;
+    }
+
+    quiz-player-progress-bar .qp-fill.anim-b {
+        animation-name: qp-progress-b;
+    }
+
+    quiz-player-progress-bar .qp-segment {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        border-right: 2px solid rgba(255, 255, 255, 0.6);
+        z-index: 2;
+        box-sizing: border-box;
+    }
+
+        quiz-player-progress-bar .qp-segment:last-child {
+            border-right: none;
+        }
+
+@keyframes qp-progress-a {
+    from { width: 0%; }
+    to   { width: 100%; }
+}
+
+@keyframes qp-progress-b {
+    from { width: 0%; }
+    to   { width: 100%; }
+}

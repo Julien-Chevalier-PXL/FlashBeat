@@ -1,0 +1,12 @@
+<quiz-player-progress-bar>
+    <div class="qp-track">
+        <div class="qp-fill @this.AnimationClass"
+             style="max-width: @(this.TargetWidthPct.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%; animation-duration: @(this.ScaledDurationMs)ms; animation-delay: -@(this.animationDelayMs.ToString("F0", System.Globalization.CultureInfo.InvariantCulture))ms; animation-play-state: @(this.isPlaying ? "running" : "paused");"></div>
+        @foreach (var (startPct, widthPct) in this.Segments)
+        {
+            <div class="qp-segment"
+                 style="left: @startPct.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)%; width: @widthPct.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)%">
+            </div>
+        }
+    </div>
+</quiz-player-progress-bar>
