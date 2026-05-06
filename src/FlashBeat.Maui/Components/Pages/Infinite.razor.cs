@@ -60,4 +60,9 @@ public sealed partial class Infinite
 
         this.isLoading = false;
     }
+
+    private async Task OnNewGameEventHandlerAsync()
+    {
+        await this.LoadRandomTrackAsync().ConfigureAwait(true);
+    }
 }

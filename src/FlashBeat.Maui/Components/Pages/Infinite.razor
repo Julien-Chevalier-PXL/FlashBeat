@@ -4,7 +4,5 @@
 @using FlashBeat.Maui.Components.Shared.Enums
 
 <div class="flash-beat-page">
-    <QuizComponent Track="this.currentTrack" />
-    <div class="actions">
-    </div>
+    <QuizComponent Track="this.currentTrack" OnNewGame="this.OnNewGameEventHandlerAsync" />
 </div>

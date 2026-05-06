@@ -28,11 +28,17 @@ public partial class QuizComponent : IDisposable
     [EditorRequired]
     public TrackViewModel Track { get; set; } = TrackViewModel.Default;
 
+    /// <summary>
+    /// Gets or sets the callback that is invoked when the user wants to start a new game.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnNewGame { get; set; }
+
     private QuizPlayerComponent? quizPlayerComponent;
 
     private CancellationTokenSource cancellationTokenSource = new();
     private QuizStatus quizStatus = QuizStatus.OnGoing;
-    private MusicalExtractLength currentExtractLength = MusicalExtractLength.PointOneSeconds;
+    private MusicalExtractLength currentExtractLength = EnumExtensions.First<MusicalExtractLength>();
     private byte[] currentExtract = [];
     private List<GuessResultViewModel?> guesses = [];
     private TrackBaseViewModel? currentSelectedGuessTrack;
@@ -192,8 +198,19 @@ public partial class QuizComponent : IDisposable
         var dialogResult = await dialog.Result.ConfigureAwait(true);
         if (dialogResult.Data is bool)
         {
-            // TODO: Send event to parent to start new quiz
+            this.Reset();
+            await this.OnNewGame.InvokeAsync().ConfigureAwait(true);
         }
+    }
+
+    private void Reset()
+    {
+        this.Track = TrackViewModel.Default;
+        this.quizStatus = QuizStatus.OnGoing;
+        this.currentExtractLength = EnumExtensions.First<MusicalExtractLength>();
+        this.currentExtract = [];
+        this.guesses = [];
+        this.currentSelectedGuessTrack = null;
     }
 
     private void ToggleTimeLock()
