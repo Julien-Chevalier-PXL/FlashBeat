@@ -2,6 +2,7 @@ namespace FlashBeat.Maui.Components.Shared;
 
 using FlashBeat.Common.Enums;
 using FlashBeat.Common.Extensions;
+using FlashBeat.Maui.Components.Shared.Dialogs;
 using FlashBeat.Maui.Components.Shared.Enums;
 using FlashBeat.Maui.Components.Shared.ViewModels;
 using FlashBeat.Web.Service.Services.Interfaces;
@@ -16,6 +17,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 public partial class QuizComponent : IDisposable
 {
     private readonly ITrackService trackService;
+    private readonly IDialogService dialogService;
 
     /// <summary>
     /// Gets or sets the track to be guessed.
@@ -30,16 +32,17 @@ public partial class QuizComponent : IDisposable
     private byte[] currentExtract = [];
     private List<GuessResultViewModel?> guesses = [];
     private TrackBaseViewModel? currentSelectedGuessTrack;
-    private bool shouldShowAnswer = false;
     private bool isTimeLocked = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuizComponent"/> class.
     /// </summary>
     /// <param name="trackService">The track service.</param>
-    public QuizComponent(ITrackService trackService)
+    /// <param name="dialogService">The dialog service.</param>
+    public QuizComponent(ITrackService trackService, IDialogService dialogService)
     {
         this.trackService = trackService;
+        this.dialogService = dialogService;
     }
 
     protected override void OnParametersSet()
@@ -95,7 +98,7 @@ public partial class QuizComponent : IDisposable
         });
     }
 
-    private void SubmitAnswer()
+    private async Task SubmitAnswerAsync()
     {
         if (this.currentSelectedGuessTrack is null)
             return;
@@ -110,6 +113,7 @@ public partial class QuizComponent : IDisposable
         if (guessType is GuessResult.RightTrack)
         {
             this.quizStatus = QuizStatus.Won;
+            await this.ShowResultDialogAsync().ConfigureAwait(true);
         }
         else if (!this.isTimeLocked)
         {
@@ -131,13 +135,41 @@ public partial class QuizComponent : IDisposable
     private async Task GiveUpAsync()
     {
         this.guesses.Add(null);
-        this.shouldShowAnswer = true;
+        this.quizStatus = QuizStatus.Lost;
+        await this.ShowResultDialogAsync().ConfigureAwait(true);
     }
 
     private void UpdateCurrentExtract(MusicalExtractLength musicalExtractLength)
     {
         this.currentExtractLength = musicalExtractLength;
         this.currentExtract = this.Track.Extracts[this.currentExtractLength];
+    }
+
+    private async Task ShowResultDialogAsync()
+    {
+        if (this.quizStatus is QuizStatus.OnGoing)
+            return;
+
+        var dialogParameters = new DialogParameters<QuizResultDialog>
+        {
+            Modal = true,
+            TrapFocus = true,
+            Width = "50%",
+        };
+        var quizResult = new QuizResultViewModel
+        {
+            Status = this.quizStatus,
+            LastGuessResult = this.guesses.LastOrDefault()?.Type ?? GuessResult.AllWrong,
+            FoundAtLength = this.currentExtractLength,
+            Track = this.Track,
+        };
+
+        var dialog = await this.dialogService.ShowDialogAsync<QuizResultDialog>(quizResult, dialogParameters).ConfigureAwait(true);
+        var dialogResult = await dialog.Result.ConfigureAwait(true);
+        if(dialogResult.Data is bool)
+        {
+            // TODO: Send event to parent to start new quiz
+        }
     }
 
     private void ToggleTimeLock()

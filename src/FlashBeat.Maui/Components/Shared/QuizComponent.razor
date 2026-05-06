@@ -60,7 +60,7 @@
 
         @if (this.currentSelectedGuessTrack is not null)
         {
-            <FluentButton OnClick="@this.SubmitAnswer" Disabled="@(this.currentSelectedGuessTrack is null)">Valider</FluentButton>
+            <FluentButton OnClick="@this.SubmitAnswerAsync" Disabled="@(this.currentSelectedGuessTrack is null)">Valider</FluentButton>
         }
         else if (this.currentExtractLength < EnumExtensions.Last<MusicalExtractLength>())
         {
@@ -68,12 +68,7 @@
         }
         else
         {
-            <FluentButton OnClick="@this.GiveUpAsync">Abandonner</FluentButton>
+            <FluentButton Disabled="this.quizStatus is not QuizStatus.OnGoing" OnClick="@this.GiveUpAsync">Abandonner</FluentButton>
         }
     </div>
-
-    @if (shouldShowAnswer)
-    {
-        <DeezePlayerComponent TrackId="@this.Track.Id" Size="250" />
-    }
 </flash-beat-quiz>

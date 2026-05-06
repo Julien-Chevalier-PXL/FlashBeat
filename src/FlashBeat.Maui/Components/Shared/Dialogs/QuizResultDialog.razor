@@ -1,0 +1,37 @@
+@using FlashBeat.Maui.Components.Shared.Enums
+@using FlashBeat.Common.Extensions
+@using FlashBeat.Maui.Components.Shared.ViewModels
+
+@implements IDialogContentComponent<QuizResultViewModel>
+
+<quiz-result-dialog>
+    <FluentDialogHeader ShowDismiss="true">
+        <span>Résultat</span>
+    </FluentDialogHeader>
+
+    <FluentDialogBody>
+        <div class="result-message">
+            @if (this.Content.Status is QuizStatus.Won)
+            {
+                <span class="success">Bravo, vous avez trouvé la bonne réponse en @this.Content.FoundAtLength.GetEnumDescription() !</span>
+            }
+            else if (this.Content.LastGuessResult is GuessResult.RightArtist)
+            {
+                <span class="game-over">GAME OVER: Dommage, vous y étiez presque !</span>
+            }
+            else
+            {
+                <span class="game-over">GAME OVER</span>
+            }
+        </div>
+
+        <div class="answer">@this.Content.Track.DisplayText</div>
+
+        <DeezePlayerComponent TrackId="@this.Content.Track.Id" Size="250" />
+    </FluentDialogBody>
+
+    <FluentDialogFooter>
+        <FluentButton OnClick="@this.CloseAsync">Fermer</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="this.NewQuizAsync">Nouvelle partie</FluentButton>
+    </FluentDialogFooter>
+</quiz-result-dialog>

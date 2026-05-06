@@ -1,0 +1,34 @@
+quiz-result-dialog ::deep .fluent-dialog-header {
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+quiz-result-dialog ::deep .fluent-dialog-body {
+    display: grid;
+    grid-template-areas:
+        "result-message"
+        "answer"
+        "player";
+    row-gap: 1rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+    quiz-result-dialog .fluent-dialog-body .result-message {
+        grid-area: result-message;
+        font-size: 1.7rem;
+    }
+
+        quiz-result-dialog .fluent-dialog-body .result-message .success {
+            color: var(--success);
+        }
+
+        quiz-result-dialog .fluent-dialog-body .result-message .game-over {
+            color: var(--error);
+        }
+
+    quiz-result-dialog .fluent-dialog-body .answer {
+        grid-area: answer;
+        font-size: 1.5em;
+    }

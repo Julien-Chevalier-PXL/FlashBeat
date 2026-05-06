@@ -1,5 +1,7 @@
 namespace FlashBeat.Common.Extensions;
 
+using System.ComponentModel;
+
 /// <summary>
 /// Extensions methods for enums.
 /// </summary>
@@ -11,7 +13,7 @@ public static class EnumExtensions
     /// <typeparam name="TEnum">The type of the enum.</typeparam>
     /// <returns>The first value of the enum <typeparamref name="TEnum"/>.</returns>
     public static TEnum First<TEnum>()
-        where TEnum : struct, Enum 
+        where TEnum : struct, Enum
         => Enum.GetValues<TEnum>()[0];
 
     /// <summary>
@@ -44,11 +46,30 @@ public static class EnumExtensions
     /// <typeparam name="TEnum">The type of the enum.</typeparam>
     /// <param name="source">The enum value.</param>
     /// <returns>The next enum value. The first value if the current is the last value.</returns>
-    public static TEnum Next<TEnum>(this TEnum source) 
+    public static TEnum Next<TEnum>(this TEnum source)
         where TEnum : struct, Enum
     {
         var enumValues = Enum.GetValues<TEnum>();
         var nextIndex = Array.IndexOf(enumValues, source) + 1;
         return nextIndex == enumValues.Length ? enumValues[0] : enumValues[nextIndex];
+    }
+
+    /// <summary>
+    /// Method to get the value of the <see cref="DescriptionAttribute"/> of an enum value.
+    /// </summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <param name="source">The enum value.</param>
+    /// <returns>The description of the source enum value.</returns>
+    public static string GetEnumDescription<TEnum>(this TEnum? source)
+        where TEnum : struct, Enum
+    {
+        if (source is null)
+            return string.Empty;
+
+        var enumType = typeof(TEnum);
+        var memberInfo = enumType.GetMember(source.ToString()!).FirstOrDefault();
+        var descriptionAttribute = memberInfo?.GetCustomAttributes(typeof(DescriptionAttribute), false)
+            .FirstOrDefault() as DescriptionAttribute;
+        return descriptionAttribute?.Description ?? source.ToString()!;
     }
 }
