@@ -74,13 +74,13 @@ internal sealed class TrackBusiness : ITrackBusiness
     /// <inheritdoc />
     public async Task<BusinessResult<PageResult<TrackBaseViewModel>>> SearchAsync(SearchQuery query, CancellationToken cancellationToken = default)
     {
-        var result = await this.musicProvider.SearchAsync(query.Terms, query.StartIndex, query.PageSize, cancellationToken).ConfigureAwait(false);
+        var result = await this.musicProvider.SearchTrackAsync(query.Terms, query.StartIndex, query.PageSize, cancellationToken).ConfigureAwait(false);
 
         return BusinessResult<PageResult<TrackBaseViewModel>>.Success(
             new()
             {
                 TotalCount = result.Total,
-                Items = [.. result.Tracks.Select(t => new TrackBaseViewModel
+                Items = [.. result.Data.Select(t => new TrackBaseViewModel
                 {
                     Id = t.Id,
                     Title = t.Title,

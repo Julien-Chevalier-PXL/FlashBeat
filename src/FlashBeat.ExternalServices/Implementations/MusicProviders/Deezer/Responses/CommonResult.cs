@@ -5,17 +5,16 @@ using System.Text.Json.Serialization;
 /// <summary>
 /// Record which represents the common result of the Deezer API.
 /// </summary>
-internal sealed class CommonResult<TData>
+internal class CommonResult<TData>
 {
+    /// <summary>
+    /// Gets an empty common result.
+    /// </summary>
+    public static CommonResult<Track> Empty => new() { Data = [] };
+
     /// <summary>
     /// Gets or sets the list of data.
     /// </summary>
     [JsonPropertyName("data")]
     public required List<TData> Data { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total number of data.
-    /// </summary>
-    [JsonPropertyName("total")]
-    public required int Total { get; set; }
 }
