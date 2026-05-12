@@ -6,6 +6,7 @@ using FlashBeat.Core.Business.Business.Interfaces;
 using FlashBeat.Core.Business.Business.Models;
 using FlashBeat.Core.Business.Business.ViewModels;
 using FlashBeat.Core.Business.Dtos;
+using FlashBeat.ExternalServices.Delegates;
 using FlashBeat.ExternalServices.Interfaces;
 
 using NAudio.Wave;
@@ -50,22 +51,31 @@ internal sealed class TrackBusiness : ITrackBusiness
 
     public async Task<BusinessResult<TrackViewModel>> GetRandomTrackFromSelectionAsync(SelectionQuery query, CancellationToken cancellationToken = default)
     {
-        var randomId = 13789091; // Orelsan - Elle viendra quand même: hardcoded for now, should be random in the future
+        var (selectionItem, indexInSelection) = await this.GetRandomItemFromSelection(query, cancellationToken).ConfigureAwait(false);
 
-        var result = await this.musicProvider.GetTrackAsync(randomId, cancellationToken).ConfigureAwait(false);
-        if (result is null)
+        GetTrackOfDelegate getTrackDelegate = selectionItem.Type switch
+        {
+            SelectionType.Album => this.musicProvider.GetTrackOfAlbumAsync,
+            SelectionType.Artist => this.musicProvider.GetTopTrackOfArtistAsync,
+            SelectionType.Playlist => this.musicProvider.GetTrackOfPlaylistAsync,
+            SelectionType.GenreChart => this.musicProvider.GetTopChartTrackAsync,
+            _ => throw new NotSupportedException($"Selection type '{selectionItem.Type}' is not supported."),
+        };
+
+        var track = await getTrackDelegate(selectionItem.Id, indexInSelection, cancellationToken).ConfigureAwait(false);
+        if (track is null)
             return BusinessResult<TrackViewModel>.Error("Track not found.");
 
-        var audios = GetQuizExtracts(result.Audio).ToDictionary(x => x.ExtractLength, x => x.Data);
+        var audios = GetQuizExtracts(track.Audio).ToDictionary(x => x.ExtractLength, x => x.Data);
 
         return BusinessResult<TrackViewModel>.Success(new TrackViewModel
         {
-            Id = result.Id,
-            Title = result.Title,
+            Id = track.Id,
+            Title = track.Title,
             Artist = new ArtistViewModel
             {
-                Id = result.Artist.Id,
-                Name = result.Artist.Name
+                Id = track.Artist.Id,
+                Name = track.Artist.Name
             },
             Extracts = audios,
         });
@@ -110,5 +120,37 @@ internal sealed class TrackBusiness : ITrackBusiness
             WaveFileWriter.WriteWavFileToStream(outMs, offsetProvider.ToWaveProvider());
             yield return (length, outMs.ToArray());
         }
+    }
+
+    private async Task<(SelectionQueryItem SelectionItem, int IndexInSelection)> GetRandomItemFromSelection(SelectionQuery query, CancellationToken cancellationToken)
+    {
+        var countTasks = query.Items.Select(async item =>
+                    item.Type switch
+                    {
+                        SelectionType.Album => (SelectionItem: item, Count: await this.musicProvider.GetAlbumTrackCountAsync(item.Id, cancellationToken).ConfigureAwait(false)),
+                        SelectionType.Artist => (SelectionItem: item, Count: 100),
+                        SelectionType.Playlist => (SelectionItem: item, Count: await this.musicProvider.GetPlaylistTrackCountAsync(item.Id, cancellationToken).ConfigureAwait(false)),
+                        SelectionType.GenreChart => (SelectionItem: item, Count: await this.musicProvider.GetGenreTopChartTrackCountAsync(item.Id, cancellationToken).ConfigureAwait(false)),
+                        _ => throw new NotSupportedException($"Selection type '{item.Type}' is not supported."),
+                    }
+                );
+
+        var counts = await Task.WhenAll(countTasks).ConfigureAwait(false);
+        var totalBbTracks = counts.Sum(x => x.Count);
+        var randomIndex = Random.Shared.Next(0, totalBbTracks);
+
+        var orderedItems = counts.OrderBy(x => x.SelectionItem.Id).ThenBy(x => x.SelectionItem.Type).ToArray();
+
+        var currentIndex = 0;
+        var currentArrayIndex = 0;
+        while (currentIndex < randomIndex)
+        {
+            currentIndex += orderedItems[currentArrayIndex].Count;
+            currentArrayIndex++;
+        }
+
+        var (selectionItem, selectionItemCount) = orderedItems[currentArrayIndex];
+        var indexInSelection = randomIndex - currentIndex - selectionItemCount;
+        return (selectionItem, indexInSelection);
     }
 }
