@@ -1,0 +1,35 @@
+### Search
+GET https://api.deezer.com/search/track?q=le%20chant%20des%20sir%C3%A8nes&limit=10&index=0
+
+### Search for artists
+GET https://api.deezer.com/search/artist?q=orelsan&limit=10&index=0
+
+### Search for albums (le chant des sirènes)
+GET https://api.deezer.com/search/album?q=le%20chant%20des%20sir%C3%A8nes&limit=10&index=0
+
+### Search for playlist (Top Hits 2000)
+GET https://api.deezer.com/search/playlist?q=Top%20Hits%202000
+
+### Get artist information
+GET https://api.deezer.com/artist/259467
+
+### Get albums of artist (contains singles)
+GET https://api.deezer.com/artist/259467/albums
+
+### Get album information
+GET https://api.deezer.com/album/1261739
+
+### Get tracks of album (contains the preview)
+GET https://api.deezer.com/album/1261739/tracks
+
+### Get genres
+GET https://api.deezer.com/genre
+
+### Get paginated top tracks of genre (0 = all)
+GET https://api.deezer.com/chart/0/tracks?limit=10&index=0
+
+### Get playlist
+GET https://api.deezer.com/playlist/11837091441
+
+### Get playlist tracks
+GET https://api.deezer.com/playlist/11837091441/tracks&limit=10&index=0
