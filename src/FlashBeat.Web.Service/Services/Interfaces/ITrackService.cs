@@ -19,6 +19,14 @@ public interface ITrackService
     Task<ServiceResult<TrackView>> GetRandomTrackAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Method to get a random track from a given selection.
+    /// </summary>
+    /// <param name="query">The selection query.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The business result containing the track.</returns>
+    Task<ServiceResult<TrackView>> GetRandomTrackFromSelectionAsync(SelectionQuery query, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Method to search.
     /// </summary>
     /// <param name="query">The query describing what and how to search.</param>
