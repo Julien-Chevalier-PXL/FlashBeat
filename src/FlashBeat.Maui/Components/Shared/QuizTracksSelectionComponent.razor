@@ -1,0 +1,17 @@
+<quiz-track-selection>
+    <label>Album</label>
+    <FluentAutocomplete TOption="AlbumBaseViewModel"
+                        Placeholder="Chercher un album"
+                        MaximumOptionsSearch="10"
+                        Multiple="false"
+                        OnOptionsSearch="this.SearchAlbums"
+                        ImmediateDelay="500"
+                        Autofocus="true"
+                        OptionText="@(album => album.)"
+                        ShowProgressIndicator="true"
+                        @bind-SelectedOption="this.currentSelectedGuessTrack"
+                        Disabled="this.quizStatus is not QuizStatus.OnGoing"
+                        Width="100%">
+
+    </FluentAutocomplete>
+</quiz-track-selection>
